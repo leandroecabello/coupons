@@ -1,0 +1,74 @@
+Documento Inicial: Propuesta de Desarrollo del Challenge
+1. Introducción
+Este documento detalla la planificación inicial para abordar el desarrollo del challenge
+solicitado, incluyendo una estimación de tiempo, arquitectura propuesta, y consultas
+identificadas.
+
+2. Planificación y Alcance
+Objetivo General:
+● Crear una API REST escalable que cumpla con los requerimientos del challenge,
+integrando las funcionalidades de maximizar el uso del cupón, obtener los ítems más
+favoritos, y hostearla en un entorno en la nube.
+División del trabajo:
+● Nivel 1: Desarrollo de API para maximizar el uso del cupón.
+● Nivel 2: Creación del endpoint para obtener el top 5 de favoritos.
+● Nivel 3: Hosting de la solución en un entorno cloud, considerando escalabilidad.
+Estimación de tiempos:
+● Nivel 1: 8-12 horas.
+● Nivel 2: 6-8 horas.
+● Nivel 3: 4-6 horas (incluye pruebas y configuración en la nube).
+● Documentación y pruebas finales: 4-6 horas.
+● Total: 22-32 horas (flexible según complejidad).
+
+3. Arquitectura Propuesta
+Lenguaje y Framework:
+● Usaré Java con Spring Boot para implementar los servicios, debido a su robustez y
+facilidad de integración con APIs externas.
+Base de datos:
+● DynamoDB: Para persistir datos relacionados a ítems y favoritos, con capacidad
+para consultas escalables y de baja latencia.
+● Redis: Para implementar cache y mejorar el rendimiento, especialmente para el
+endpoint de favoritos.
+
+Seguridad:
+● Implementaré las siguientes medidas de seguridad básicas:
+○ API Key: Para controlar el acceso a los endpoints.
+○ Rate Limiting: Para evitar abuso de la API.
+○ HTTPS: Obligatorio al desplegar en producción.
+○ CORS: Configuración adecuada según los orígenes permitidos.
+
+Hosting:
+● AWS Lambda: Debido a mi experiencia previa y su capacidad de escalabilidad
+automática.
+
+4. Consultas y Decisiones a Validar
+1. Persistencia de datos:
+○ En caso de optar por implementar persistencia con DynamoDB, ¿existen
+expectativas específicas sobre cómo estructurar los datos o requisitos
+relacionados con la optimización de consultas?
+○ Si el uso de una base de datos persistente no es estrictamente necesario,
+¿sería aceptable implementar una solución temporal en memoria para
+demostrar la lógica del sistema?
+
+2. Escalabilidad:
+○ Con respecto a los 100K RPM mencionados en el desafío, ¿se espera una
+evaluación conceptual del diseño escalable, o se requiere realizar métricas
+concretas en entornos de prueba?
+○ En caso de evaluar métricas, ¿existen herramientas o escenarios específicos
+que se deba utilizar?
+3. Consumo de la API pública:
+○ ¿Sería aceptable simular parcialmente datos no críticos en caso de
+limitaciones de tiempo o conectividad con la API pública proporcionada?
+○ ¿Existen restricciones específicas (como límites de rate o tiempo de
+respuesta) al consumir la API pública de Mercado Libre?
+
+5. Próximos Pasos
+● Con la validación de las consultas anteriores, podré ajustar las estimaciones si es
+necesario.
+● Compartiré un enlace a un repositorio en GitHub donde se encontrará el progreso
+del desarrollo y la documentación asociada
+
+Justificación de decisiones:
+● Uso de Spring Boot por su robustez y soporte amplio.
+● DynamoDB y Redis por rendimiento y escalabilidad.
+● AWS Lambda por experiencia previa y facilidad de configuración.

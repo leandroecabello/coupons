@@ -1,0 +1,132 @@
+Challenge: Cupón de compra
+
+Mercado Libre está lanzando un nuevo beneficio para sus usuarios más frecuentes: un
+cupón gratuito de un monto específico que permite comprar múltiples ítems marcados como
+favoritos, siempre que el total no exceda el valor del cupón. Para facilitar este proceso, se
+está considerando el desarrollo de una API que, dada una lista de item_id y el monto total,
+pueda proporcionar la lista de ítems que maximice el uso del cupón. Es decir, dado un
+cupón de $500 por ejemplo, cuáles son los items que puedo comprar sin superar dicho
+monto, ni repetir unidades del mismo ítem.
+Aclaraciones
+
+● Sólo se puede comprar una unidad por item_id.
+● No hay preferencia en la cantidad total de ítems, siempre y cuando gasten el
+máximo posible.
+● El precio puede contener hasta 2 decimales.
+Asumiendo la siguiente lista de precios y un máximo de $500
+item_id precio
+MLA1 $100
+MLA2 $210
+MLA3 $260
+MLA4 $80
+MLA5 $90
+La respuesta sería:
+
+[
+"MLA1",
+"MLA2",
+"MLA4",
+"MLA5"
+]
+
+JavaScript
+
+JavaScript
+Desafío
+
+Nivel 1
+Crear una API REST, con el servicio “/coupon/” al que se pueda enviar una lista de item ids
+y el monto del cupón, y devuelva los ítems que tendría que comprar el usuario.
+Request:
+
+curl --location --request POST '/coupon/' \
+--header 'Content-Type: application/json' \
+--data '{
+"item_ids": [
+"MLA1",
+"MLA2",
+"MLA3",
+"MLA4",
+"MLA5"
+],
+"amount": 500
+}'
+
+Response example:
+
+{
+"item_ids": [
+"MLA1",
+"MLA2",
+"MLA4",
+"MLA5"
+],
+"total": 480
+}
+
+JavaScript
+
+JavaScript
+Nivel 2
+Crear un servicio el cual devuelve el top 5 de ítems más “favoriteados”.
+Consideraciones
+● Los ítems favoritos son los más elegidos por los usuarios de cupón.
+● Hay usuarios que tienen miles de items en favoritos.
+● Un mismo ítem puede ser favorito de muchos usuarios.
+
+Request:
+
+curl --location --request GET '/coupon/stats'
+
+Response example:
+
+[
+{
+"id": "MLA1",
+"quantity": 15,
+...
+},
+{
+"id": "MLA2",
+"quantity": 10,
+...
+}
+]
+
+Unset
+
+Unset
+
+JavaScript
+Nivel 3
+Hostear esa API en un cloud computing libre (Google App Engine, Amazon AWS, etc).
+Consideraciones
+● Esta api tendría que escalar para soportar tráfico de hasta 100K rpm.
+
+Recursos
+Utiliza el siguiente recurso de la API de Ítems para obtener el precio de un ítem provisto en
+el nodo “price”.
+
+curl -X GET https://api.mercadolibre.com/items/:item_id
+
+Ejemplo
+Request:
+
+curl -X GET https://api.mercadolibre.com/items/MLA599260060
+
+Response:
+{
+"id": "MLA599260060",
+"title": "Item De Test - Por Favor No Ofertar",
+"price": 130,
+"site_id": "MLA",
+...
+}
+
+Podés encontrar más información sobre los recursos públicos acá.
+
+Entrega
+● Código fuente (En repositorio github).
+● Instrucciones de cómo ejecutar el programa o levantar la app.
+● URL de la API (Nivel 3).
+Incluí cualquier información que te parezca relevante.
