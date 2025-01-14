@@ -80,6 +80,15 @@ src
     └── java                             # Pruebas unitarias
 ```
 
+## Archivos adjuntos
+Este repositorio incluye los siguientes documentos relevantes:
+1. [Challenge](./challenge.txt): Detalles completos del desafío planteado por Mercado Libre.
+2. [Propuesta](./propuesta_desarrollo.txt): Documentación de la planificación inicial del proyecto.
+
+## Diagramas
+### Arquitectura del sistema
+![Arquitectura](./images/diagrama_arq.png)
+
 ## Próximos pasos
 1. Integrar Redis para el almacenamiento en caché.
 2. Implementar DynamoDB como base de datos persistente.
