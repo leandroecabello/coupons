@@ -16,7 +16,7 @@ public class SwaggerConfig {
 
     @Value("${mercadolibre.uri}")
     private String meliUri;
-    
+
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
@@ -29,8 +29,8 @@ public class SwaggerConfig {
                                 .type(SecurityScheme.Type.OAUTH2)
                                 .flows(new OAuthFlows()
                                         .authorizationCode(new OAuthFlow()
-                                                .authorizationUrl(MELI_URI + "/authorization")
-                                                .tokenUrl(MELI_URI + "/oauth/token")
+                                                .authorizationUrl(meliUri + "/authorization")
+                                                .tokenUrl(meliUri + "/oauth/token")
                                                 .scopes(new Scopes()
                                                         .addString("read", "Leer datos privados")
                                                         .addString("write", "Escribir datos privados")
