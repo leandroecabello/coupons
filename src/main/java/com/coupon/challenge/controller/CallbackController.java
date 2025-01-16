@@ -24,7 +24,6 @@ public class CallbackController {
     @GetMapping
     public Mono<ResponseEntity<String>> handleCallback(@RequestParam String code) {
         // Llama al servicio y devuelve el Mono directamente
-        System.out.println("code: " + code);
         return authService.getAccessToken(code)
                 .map(token -> ResponseEntity.ok("Access Token: " + token));
     }
