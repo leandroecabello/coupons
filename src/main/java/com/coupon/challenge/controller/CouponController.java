@@ -20,6 +20,7 @@ import java.util.Map;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/coupon")
@@ -37,7 +38,7 @@ public class CouponController {
 
     @PostMapping("/")
     @Operation(summary = "Calcula los ítems óptimos para un cupón", description = "Devuelve los ítems que se pueden comprar sin exceder el monto del cupón.")
-    public ResponseEntity<Map<String, Object>> getOptimalItems(@RequestBody CouponRequest request) {
+    public Mono<ResponseEntity<Map<String, Object>>> getOptimalItems(@RequestBody CouponRequest request) {
         // Validar que la lista de items y el monto no sean nulos o vacíos
         if (request.getItemIds() == null || request.getItemIds().isEmpty()) {
             logger.error("La lista de item_ids no puede estar vacía.");
@@ -48,11 +49,10 @@ public class CouponController {
             logger.error("El monto debe ser mayor a 0.");
             throw new InvalidRequestException("El monto debe ser mayor a 0.");
         }
-        
-        List<String> itemIds = request.getItemIds();
-        double amount = request.getAmount();
 
-        Map<String, Object> response = couponService.calculateOptimalItems(itemIds, amount);
-        return ResponseEntity.ok(response);
+
+        // Llama al servicio y devuelve un flujo reactivo
+        return couponService.calculateOptimalItems(request.getItemIds(), request.getAmount())
+            .map(response -> ResponseEntity.ok(response)); // Transforma el resultado en un ResponseEntity
     }
 }
