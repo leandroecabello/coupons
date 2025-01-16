@@ -11,3 +11,9 @@ services:
     command: mvn spring-boot:run
     environment:
       - JAVA_OPTS=-Dspring.devtools.restart.poll-interval=1000 -Dspring.devtools.restart.quiet-period=500
+      - MERCADOLIBRE_CLIENT_ID=${MERCADOLIBRE_CLIENT_ID}
+      - MERCADOLIBRE_CLIENT_SECRET=${MERCADOLIBRE_CLIENT_SECRET}
+      - MERCADOLIBRE_URI=${MERCADOLIBRE_URI}
+      - APP_URI=${APP_URI}
+    env_file:
+      - .env
