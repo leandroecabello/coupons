@@ -18,7 +18,7 @@ public class WebConfig {
                         .allowedOrigins("*") // Permite cualquier origen (solo para pruebas)
                         .allowedMethods("*")
                         .allowedHeaders("*")
-                        .allowCredentials(true);
+                        .allowCredentials(false);
             }
         };
     }
