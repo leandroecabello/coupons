@@ -42,5 +42,30 @@ public class CouponService {
             "total", total
         );
             
-    }        
+    }     
+    
+    public List<Map<String, Object>> getTopFavorites() {
+        // Simulación de datos en memoria
+        Map<String, Integer> favoritesCount = Map.of(
+            "MLA1", 15,
+            "MLA2", 10,
+            "MLA3", 8,
+            "MLA4", 5,
+            "MLA5", 3,
+            "MLA6", 2
+        );
+
+        // Ordena los ítems por cantidad (descendente) y toma los primeros 5
+        return favoritesCount.entrySet().stream()
+            .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
+            .limit(5)
+            .map(entry -> {
+                // Construye el mapa con los tipos correctos
+                Map<String, Object> item = new HashMap<>();
+                item.put("id", entry.getKey());
+                item.put("quantity", entry.getValue());
+                return item;
+            })
+            .toList();
+    }
 }

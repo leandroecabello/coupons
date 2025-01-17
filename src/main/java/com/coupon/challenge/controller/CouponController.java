@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 
 @RestController
-@RequestMapping("/coupon")
+@RequestMapping("/v1/coupon")
 @Tag(name = "Coupon API", description = "Endpoints para gestionar cupones e ítems favoritos")
 public class CouponController {
     private static final Logger logger = LoggerFactory.getLogger(CouponController.class);
@@ -53,5 +53,12 @@ public class CouponController {
 
         Map<String, Object> response = couponService.calculateOptimalItems(request.getItemIds(), request.getAmount());
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<List<Map<String, Object>>> getTopFiveFavorites() {
+        // Llama al servicio para obtener el Top 5
+        List<Map<String, Object>> topFavorites = couponService.getTopFavorites();
+        return ResponseEntity.ok(topFavorites);
     }
 }
