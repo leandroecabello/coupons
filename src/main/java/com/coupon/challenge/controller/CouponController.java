@@ -20,6 +20,8 @@ import java.util.Map;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 
 
 @RestController
@@ -37,7 +39,23 @@ public class CouponController {
     }
 
     @PostMapping("/")
-    @Operation(summary = "Calcula los ítems óptimos para un cupón", description = "Devuelve los ítems que se pueden comprar sin exceder el monto del cupón.")
+    @Operation(
+        summary = "Calcula los ítems óptimos para un cupón",
+        description = "Devuelve los ítems que se pueden comprar sin exceder el monto del cupón.",
+        requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Ejemplo de solicitud",
+                    value = "{\n" +
+                            "  \"item_ids\": [\"MLA1\", \"MLA2\", \"MLA3\", \"MLA4\", \"MLA5\"],\n" +
+                            "  \"amount\": 500\n" +
+                            "}"
+                )
+            )
+        )
+    )
     public ResponseEntity<Map<String, Object>> getOptimalItems(@RequestBody CouponRequest request) {
         // Validar que la lista de items y el monto no sean nulos o vacíos
         if (request.getItemIds() == null || request.getItemIds().isEmpty()) {
@@ -56,6 +74,7 @@ public class CouponController {
     }
 
     @GetMapping("/stats")
+    @Operation(summary = "Obtiene el Top 5 de ítems favoritos", description = "Devuelve el Top 5 de ítems favoritos.")
     public ResponseEntity<List<Map<String, Object>>> getTopFiveFavorites() {
         // Llama al servicio para obtener el Top 5
         List<Map<String, Object>> topFavorites = couponService.getTopFavorites();
