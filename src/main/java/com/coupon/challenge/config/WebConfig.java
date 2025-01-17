@@ -18,7 +18,7 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Permite todos los endpoints
-                        .allowedOrigins(allowedOrigin) // Reemplaza con el dominio de producción
+                        .allowedOrigins(allowedOrigin)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
