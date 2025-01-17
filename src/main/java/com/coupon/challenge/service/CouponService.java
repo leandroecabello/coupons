@@ -1,33 +1,51 @@
 package com.coupon.challenge.service;
 
+import com.coupon.challenge.interfaces.FavoritesDataSource;
+import com.coupon.challenge.interfaces.PriceDataSource;
 import org.springframework.stereotype.Service;
-import java.util.*;
+import org.springframework.beans.factory.annotation.Qualifier;
+import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 @Service
 public class CouponService {
 
+    private final FavoritesDataSource favoritesDataSource;
+    private final PriceDataSource priceDataSource;
+
+    public CouponService(
+        @Qualifier("mockFavoritesDataSource") FavoritesDataSource favoritesDataSource, 
+        @Qualifier("mockPriceDataSource") PriceDataSource priceDataSource
+    ) {
+        this.favoritesDataSource = favoritesDataSource;
+        this.priceDataSource = priceDataSource;
+    }
+
     public Map<String, Object> calculateOptimalItems(List<String> itemIds, double amount) {
-        // Simulación de precios 
-        // TODO: (luego esto se integrará con la API de Mercado Libre)
-        Map<String, Double> prices = Map.of(
-                "MLA1", 100.0,
-                "MLA2", 210.0,
-                "MLA3", 260.0,
-                "MLA4", 80.0,
-                "MLA5", 90.0
-        );
+        Map<String, Double> prices = priceDataSource.getPrices();
 
-        // Ordena ítems por precio ascendente
-        List<String> sortedItems = itemIds.stream()
+        List<String> sortedItems = sortItemsByPrice(itemIds, prices);
+
+        List<String> selectedItems = selectItemsWithinAmount(sortedItems, prices, amount);
+
+        return prepareResponse(selectedItems, calculateTotal(selectedItems, prices));
+    }
+
+    private List<String> sortItemsByPrice(List<String> itemIds, Map<String, Double> prices) {
+        return itemIds.stream()
                 .filter(prices::containsKey)
-                .sorted((a, b) -> Double.compare(prices.get(a), prices.get(b)))
+                .sorted(Comparator.comparingDouble(prices::get))
                 .toList();
+    }
 
-        // Selecciona ítems sin exceder el monto del cupón
+    private List<String> selectItemsWithinAmount(List<String> sortedItems, Map<String, Double> prices, double amount) {
         List<String> selectedItems = new ArrayList<>();
         double total = 0.0;
 
-        // Selecciona ítems sin exceder el monto del cupón
         for (String item : sortedItems) {
             double price = prices.get(item);
             if (total + price <= amount) {
@@ -36,36 +54,36 @@ public class CouponService {
             }
         }
 
-        // Prepara la respuesta
-        return Map.of(
-            "item_ids", selectedItems,
-            "total", total
-        );
-            
-    }     
-    
-    public List<Map<String, Object>> getTopFavorites() {
-        // Simulación de datos en memoria
-        Map<String, Integer> favoritesCount = Map.of(
-            "MLA1", 15,
-            "MLA2", 10,
-            "MLA3", 8,
-            "MLA4", 5,
-            "MLA5", 3,
-            "MLA6", 2
-        );
+        return selectedItems;
+    }
 
-        // Ordena los ítems por cantidad (descendente) y toma los primeros 5
+    private double calculateTotal(List<String> selectedItems, Map<String, Double> prices) {
+        return selectedItems.stream()
+                .mapToDouble(prices::get)
+                .sum();
+    }
+
+    private Map<String, Object> prepareResponse(List<String> selectedItems, double total) {
+        return Map.of(
+                "item_ids", selectedItems,
+                "total", total
+        );
+    }
+
+    public List<Map<String, Object>> getTopFavorites() {
+        Map<String, Integer> favoritesCount = favoritesDataSource.getFavoritesCount();
+
         return favoritesCount.entrySet().stream()
-            .sorted((a, b) -> b.getValue().compareTo(a.getValue()))
-            .limit(5)
-            .map(entry -> {
-                // Construye el mapa con los tipos correctos
-                Map<String, Object> item = new HashMap<>();
-                item.put("id", entry.getKey());
-                item.put("quantity", entry.getValue());
-                return item;
-            })
-            .toList();
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .limit(5)
+                .map(this::mapToFavoriteItem)
+                .toList();
+    }
+
+    private Map<String, Object> mapToFavoriteItem(Map.Entry<String, Integer> entry) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("id", entry.getKey());
+        item.put("quantity", entry.getValue());
+        return item;
     }
 }
