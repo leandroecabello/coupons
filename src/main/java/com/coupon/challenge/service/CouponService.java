@@ -2,8 +2,12 @@ package com.coupon.challenge.service;
 
 import com.coupon.challenge.interfaces.FavoritesDataSource;
 import com.coupon.challenge.interfaces.PriceDataSource;
+
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Qualifier;
+
+import reactor.core.publisher.Mono;
+
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -15,14 +19,14 @@ import java.util.stream.Collectors;
 public class CouponService {
 
     private final FavoritesDataSource favoritesDataSource;
-    private final PriceDataSource priceDataSource;
+    private final MercadoLibreService mercadoLibreService;
 
     public CouponService(
-        @Qualifier("mockFavoritesDataSource") FavoritesDataSource favoritesDataSource, 
-        @Qualifier("mockPriceDataSource") PriceDataSource priceDataSource
+        @Qualifier("mockFavoritesDataSource") FavoritesDataSource favoritesDataSource,
+        MercadoLibreService mercadoLibreService
     ) {
         this.favoritesDataSource = favoritesDataSource;
-        this.priceDataSource = priceDataSource;
+        this.mercadoLibreService = mercadoLibreService;
     }
 
     /**
@@ -32,14 +36,13 @@ public class CouponService {
      * @param amount Total amount available for purchase.
      * @return A map containing two keys: 'items' with the list of item IDs to purchase and 'total' with the total amount spent.
      */
-    public Map<String, Object> calculateOptimalItems(List<String> itemIds, double amount) {
-        Map<String, Double> prices = priceDataSource.getPrices();
-
-        List<String> sortedItems = sortItemsByPrice(itemIds, prices);
-
-        List<String> selectedItems = selectItemsWithinAmount(sortedItems, prices, amount);
-
-        return prepareResponse(selectedItems, calculateTotal(selectedItems, prices));
+    public Mono<Map<String, Object>> calculateOptimalItems(List<String> itemIds, double amount) {
+        return mercadoLibreService.getPrices(itemIds) // Obtiene precios de la API de Mercado Libre
+            .map(prices -> {
+                List<String> sortedItems = sortItemsByPrice(itemIds, prices);
+                List<String> selectedItems = selectItemsWithinAmount(sortedItems, prices, amount);
+                return prepareResponse(selectedItems, calculateTotal(selectedItems, prices));
+            });
     }
 
     /**

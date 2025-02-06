@@ -3,13 +3,18 @@
 ## Descripción
 Este proyecto implementa una API REST para resolver el challenge solicitado por Mercado Libre. La API permite maximizar el uso de un cupón para la compra de ítems favoritos y gestionar un endpoint para obtener el top 5 de ítems más seleccionados.
 
+## Despliegue en Producción
+La API está desplegada en Render y se puede probar directamente desde el Swagger UI:
+- **Swagger UI**: [Coupons-app](https://coupons-vjht.onrender.com/swagger-ui/index.html)
+
+Nota: Desplegado en producción con datos simulados para favoritos y precios, pero preparado para integrarse con datos reales en el futuro
+
 ## Tecnologías utilizadas
 - **Java 17**
 - **Spring Boot 3.4.1**
 - **Maven**
 - **Docker**
-- **AWS Lambda** (planificado para hosting en producción)
-- **Redis** y **DynamoDB** (integración futura)
+- **Render** (para el despliegue en producción)
 
 ## Endpoints
 ### `/api/status`
@@ -23,17 +28,31 @@ Este proyecto implementa una API REST para resolver el challenge solicitado por 
   ```
 
 ### `/coupon`
-- **Método**: POST (Planificado)
+- **Método**: POST
 - **Descripción**: Calcula los ítems que pueden ser comprados con el cupón sin exceder su monto.
+- **Datos simulados**: Los precios de los ítems están actualmente configurados en memoria, pero se pueden integrar con datos reales de una API o base de datos.
 
 ### `/coupon/stats`
-- **Método**: GET (Planificado)
+- **Método**: GET
 - **Descripción**: Devuelve el top 5 de ítems más seleccionados.
+- **Datos simulados**: Los ítems favoritos están configurados en memoria, listos para integrarse con una base de datos.
+
 
 ## Requisitos previos
 1. **Java 17**: Asegúrate de tener instalado Java 17.
 2. **Docker**: Configurado en tu sistema.
 3. **Maven**: Instalado para construir el proyecto localmente si no usas Docker.
+
+## Decisiones técnicas y desafíos
+1. **Datos simulados**:
+Los precios y los favoritos están configurados como mocks para simplificar el desarrollo inicial.
+La estructura permite integrar fácilmente una base de datos o una API en el futuro.
+
+2. **OAuth con Mercado Libre**:
+Intenté implementar el flujo de autorización para obtener datos reales, pero hubo problemas para generar el token debido a limitaciones de tiempo.
+
+3. **Despliegue**:
+Originalmente planeé usar AWS, pero opté por Render por su simplicidad y facilidad de configuración para este proyecto.
 
 ## Instalación y ejecución
 ### Opcion 1: Usando Docker
@@ -47,7 +66,7 @@ Este proyecto implementa una API REST para resolver el challenge solicitado por 
    ```
 3. Accede a la aplicación en [http://localhost:8080](http://localhost:8080).
 
-### Opcion 2: Usando Docker Compose
+### Opcion 2: Usando Docker Compose `(Recomendada)`
 1. Inicia los servicios:
    ```bash
    docker-compose up
@@ -70,15 +89,28 @@ src
 ├── main
 │   ├── java
 │   │   └── com.coupon.challenge
-│   │       ├── CouponApplication.java   # Clase principal
-│   │       ├── controller
-│   │       │   └── CouponController.java # Controlador REST
-│   │       └── service                  # Lógica de negocio
+│   │       ├── config                # Configuraciones generales (Swagger, CORS, etc.)
+│   │       ├── controller            # Controladores REST
+│   │       ├── dto                   # Clases DTO para requests y responses
+│   │       ├── exception             # Manejo de excepciones personalizadas
+│   │       ├── interfaces            # Definición de interfaces
+│   │       ├── service               # Lógica de negocio
 │   └── resources
-│       └── application.properties       # Configuración de la aplicación
+│       ├── application.properties    # Configuración principal
+│       └── application-dev.properties # Configuración para desarrollo (opcional)
 └── test
-    └── java                             # Pruebas unitarias
+    ├── java        
 ```
+
+### Descripción de las carpetas
+- **`config`**: Configuración general de la aplicación (Swagger, CORS, etc.).
+- **`controller`**: Controladores REST que gestionan las solicitudes HTTP.
+- **`dto`**: Clases de transferencia de datos (requests/responses).
+- **`exception`**: Manejo de excepciones personalizadas, como validaciones o errores de negocio.
+- **`interfaces`**: Definición de interfaces, por ejemplo, para acceso a datos o servicios.
+- **`service`**: Contiene la lógica de negocio principal.
+- **`resources`**: Configuraciones como `application.properties`.
+- **`test`**: Pruebas unitarias e integraciones.
 
 ## Archivos adjuntos
 Este repositorio incluye los siguientes documentos relevantes:
@@ -86,19 +118,18 @@ Este repositorio incluye los siguientes documentos relevantes:
 2. [Propuesta](./propuesta_desarrollo.txt): Documentación de la planificación inicial del proyecto.
 
 ## Diagramas
-### Arquitectura del sistema
+### Arquitectura inicial del sistema
 ![Arquitectura](./images/diagrama_arq.png)
 
 ## Próximos pasos
-1. Integrar Redis para el almacenamiento en caché.
-2. Implementar DynamoDB como base de datos persistente.
-3. Configurar el despliegue en AWS Lambda para producción.
-
-## Contribuciones
-Si deseas contribuir al proyecto, sigue estos pasos:
-1. Haz un fork del repositorio.
-2. Crea una rama para tu funcionalidad (`git checkout -b feature/nueva-funcionalidad`).
-3. Realiza un pull request con tus cambios.
+1. **Integrar datos reales**:
+Conectar con la API de Mercado Libre para obtener precios y estadísticas de favoritos.
+2. **Almacenamiento persistente**:
+Usar una base de datos como DynamoDB o MongoDB para guardar favoritos y otros datos.
+3. **Despliegue en AWS**:
+Migrar el despliegue a AWS para aprovechar su escalabilidad y robustez.
+4. **Optimización del rendimiento**:
+Implementar caché con Redis para mejorar tiempos de respuesta.
 
 ## Autor
 Leandro Cabello - [Linkedin](https://www.linkedin.com/in/leandroezequielcabello/)

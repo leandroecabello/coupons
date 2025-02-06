@@ -8,6 +8,7 @@ import reactor.core.publisher.Mono;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @Service
 public class MercadoLibreService {
@@ -24,23 +25,26 @@ public class MercadoLibreService {
     }
 
     public Mono<Map<String, Double>> getPrices(List<String> itemIds) {
-        String ids = String.join(",", itemIds);
+        return Mono.zip(
+            itemIds.stream()
+                .map(this::getPrice)
+                .collect(Collectors.toList()),
+            results -> Arrays.stream(results)
+                .map(result -> (Map.Entry<String, Double>) result)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue))
+        );
+    }
 
-        // Llamada a la API de Mercado Libre con manejo de errores
+    private Mono<Map.Entry<String, Double>> getPrice(String itemId) {
         return webClient.get()
-        .uri(uriBuilder -> uriBuilder.path("/items").queryParam("ids", ids).build())
-        .retrieve()
-        .onStatus(
-            status -> status.isError(), // Condición para detectar error HTTP
-            response -> response.bodyToMono(String.class)
-                .map(body -> new RuntimeException("Error en la API de Mercado Libre: " + body))
-        )
-        .bodyToMono(List.class) // Deserializa la respuesta como una lista
-        .map(list -> ((List<Map<String, Object>>) list).stream()
-                .collect(Collectors.toMap(
-                        item -> (String) item.get("id"),
-                        item -> ((Number) item.get("price")).doubleValue()
-                ))
-        ); // Devuelve el flujo con el mapa procesado
+            .uri("/items/{itemId}", itemId)
+            .retrieve()
+            .onStatus(
+                status -> status.isError(), // Condición para detectar error HTTP
+                response -> response.bodyToMono(String.class)
+                    .map(body -> new RuntimeException("Error en la API de Mercado Libre: " + body))
+            )
+            .bodyToMono(Map.class) // Deserializa la respuesta como un mapa
+            .map(item -> Map.entry(itemId, ((Number) item.get("price")).doubleValue())); // Devuelve la entrada del mapa con el id y el precio
     }
 }

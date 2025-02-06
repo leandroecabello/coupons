@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import reactor.core.publisher.Mono;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,21 +58,19 @@ public class CouponController {
             )
         )
     )
-    public ResponseEntity<Map<String, Object>> getOptimalItems(@RequestBody CouponRequest request) {
-        // Validar que la lista de items y el monto no sean nulos o vacíos
+    public Mono<ResponseEntity<Map<String, Object>>> getOptimalItems(@RequestBody CouponRequest request) {
         if (request.getItemIds() == null || request.getItemIds().isEmpty()) {
             logger.error("La lista de item_ids no puede estar vacía.");
-            throw new InvalidRequestException("La lista de item_ids no puede estar vacía.");
+            return Mono.just(ResponseEntity.badRequest().body(Map.of("error", "La lista de item_ids no puede estar vacía.")));
         }
-
+        
         if (request.getAmount() <= 0) {
             logger.error("El monto debe ser mayor a 0.");
-            throw new InvalidRequestException("El monto debe ser mayor a 0.");
+            return Mono.just(ResponseEntity.badRequest().body(Map.of("error", "El monto debe ser mayor a 0.")));
         }
-
-
-        Map<String, Object> response = couponService.calculateOptimalItems(request.getItemIds(), request.getAmount());
-        return ResponseEntity.ok(response);
+        
+        return couponService.calculateOptimalItems(request.getItemIds(), request.getAmount())
+            .map(ResponseEntity::ok);
     }
 
     @GetMapping("/stats")
