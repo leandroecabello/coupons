@@ -73,6 +73,13 @@ public class CouponService {
         List<String> selectedItems = new ArrayList<>();
         double total = 0.0;
 
+        /** 
+         * Este bucle for se utiliza para seleccionar los artículos que se pueden comprar sin superar la cantidad de dinero disponible.
+         * Primero, se ordenan los artículos por precio. 
+         * Luego, se recorren los artículos ordenados y se van agregando a la lista de artículos seleccionados 
+         * siempre y cuando el precio total no supere la cantidad de dinero disponible. 
+         * Esto asegura que se pueda comprar la mayor cantidad de artículos posible dentro del presupuesto
+         */
         for (String item : sortedItems) {
             double price = prices.get(item);
             if (total + price <= amount) {
