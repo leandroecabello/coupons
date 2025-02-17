@@ -27,7 +27,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 
 
 @RestController
-@RequestMapping("/v1/coupon")
+@RequestMapping("/v1/coupons")
 @Tag(name = "Coupon API", description = "Endpoints para gestionar cupones e ítems favoritos")
 public class CouponController {
     private static final Logger logger = LoggerFactory.getLogger(CouponController.class);
