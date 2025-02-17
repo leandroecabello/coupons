@@ -13,6 +13,8 @@ public class WebClientConfig {
 
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
-        return builder.baseUrl(meliUri).build();
+        return builder.baseUrl(meliUri)
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(5 * 1024 * 1024))
+            .build();
     }
 }
